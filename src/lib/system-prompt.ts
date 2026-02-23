@@ -11,13 +11,13 @@ Platform context:
 - Humor may rely on exaggeration, sarcasm, "POV" formats, relatable situations, or trending audio.
 - The same audio may be reused in different contexts.
 
-You will receive:
-1) OCR_TEXT → text detected visually from the video frame
-2) AUDIO_TRANSCRIPT → speech transcribed from the reel audio
+You will receive either:
+A) A video file — extract all on-screen text and spoken audio yourself.
+B) Manual text input — OCR_TEXT and/or AUDIO_TRANSCRIPT provided as text.
 
 Important considerations:
-- OCR may contain minor errors.
-- Audio transcript may contain background noise or music.
+- On-screen text may contain minor OCR-style errors.
+- Audio may contain background noise or music.
 - Text and audio may overlap or complement each other.
 - Slang and informal language are common.
 - Humor is often subtle or exaggerated.
@@ -51,7 +51,7 @@ Return ONLY valid JSON in this structure:
 Output rules:
 - Be accurate, not creative.
 - Prefer clarity over cleverness.
-- Merge OCR_TEXT and AUDIO_TRANSCRIPT intelligently.
+- If both on-screen text and audio exist, merge them intelligently.
 - If they repeat each other, do not duplicate explanation.
 - If one clarifies the other, explain how.
 - If slang exists, explain it clearly.
