@@ -1,0 +1,322 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 380px;
+  max-height: 580px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0a0a0a;
+  color: #e5e5e5;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#app {
+  padding: 16px;
+}
+
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+#settings-toggle {
+  background: none;
+  border: none;
+  color: #a3a3a3;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+#settings-toggle:hover {
+  background: #262626;
+  color: #fff;
+}
+
+/* Settings */
+#settings-panel {
+  background: #171717;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a3a3a3;
+}
+
+.setting-group input {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #e5e5e5;
+  font-size: 13px;
+  outline: none;
+}
+
+.setting-group input:focus {
+  border-color: #525252;
+}
+
+.status-text {
+  font-size: 12px;
+  color: #22c55e;
+}
+
+.status-text.error {
+  color: #ef4444;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #333;
+  border-radius: 10px;
+  background: #171717;
+  color: #e5e5e5;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  background: #262626;
+  border-color: #404040;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+.btn-primary {
+  width: 100%;
+  background: #fff;
+  color: #0a0a0a;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #e5e5e5;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Main section */
+#main-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hint {
+  color: #a3a3a3;
+  font-size: 13px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #a3a3a3;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  accent-color: #fff;
+}
+
+/* Loading */
+#loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #333;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#loading p {
+  color: #a3a3a3;
+  font-size: 13px;
+}
+
+/* Error */
+#error {
+  background: #1c0a0a;
+  border: 1px solid #7f1d1d;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+#error p {
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+/* Results */
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #333;
+  color: #d4d4d4;
+  background: #171717;
+}
+
+.badge.confidence-high {
+  background: #052e16;
+  border-color: #166534;
+  color: #86efac;
+}
+
+.badge.confidence-medium {
+  background: #1c1917;
+  border-color: #78350f;
+  color: #fcd34d;
+}
+
+.badge.confidence-low {
+  background: #1c0a0a;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+/* Result cards */
+.result-card {
+  background: #171717;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.result-card h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #737373;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.field p {
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.divider {
+  height: 1px;
+  background: #262626;
+  margin: 10px 0;
+}
+
+/* Vocabulary */
+.vocab-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #262626;
+}
+
+.vocab-item:last-child {
+  border-bottom: none;
+}
+
+.vocab-word {
+  font-weight: 600;
+  color: #fff;
+}
+
+.vocab-meaning {
+  color: #a3a3a3;
+  font-size: 13px;
+}
+
+.vocab-notes {
+  font-size: 12px;
+  color: #737373;
+  padding-left: 8px;
+  border-left: 2px solid #333;
+  margin-top: 4px;
+}
+
+/* Utilities */
+.hidden {
+  display: none !important;
+}
