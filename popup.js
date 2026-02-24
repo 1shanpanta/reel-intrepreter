@@ -20,6 +20,19 @@ const errorSection = $("error");
 const errorText = $("error-text");
 const resultsSection = $("results");
 const againBtn = $("again-btn");
+const durationRow = $("duration-row");
+const audioDuration = $("audio-duration");
+const durationLabel = $("duration-label");
+
+// Show/hide duration slider with checkbox
+captureAudioCheckbox.addEventListener("change", () => {
+  durationRow.classList.toggle("hidden", !captureAudioCheckbox.checked);
+});
+
+// Update label as slider moves
+audioDuration.addEventListener("input", () => {
+  durationLabel.textContent = `${audioDuration.value}s`;
+});
 
 // Provider UI switching
 function updateProviderUI(provider) {
@@ -102,13 +115,15 @@ interpretBtn.addEventListener("click", async () => {
   resultsSection.classList.add("hidden");
   loadingSection.classList.remove("hidden");
 
+  const duration = parseInt(audioDuration.value, 10);
+
   if (withAudio) {
-    loadingText.textContent = "Recording audio (2s)...";
+    loadingText.textContent = `Recording audio (${duration}s)...`;
     setTimeout(() => {
       if (!loadingSection.classList.contains("hidden")) {
         loadingText.textContent = "Analyzing with AI...";
       }
-    }, 3000);
+    }, (duration + 1) * 1000);
   } else {
     loadingText.textContent = "Analyzing reel...";
   }
@@ -117,6 +132,7 @@ interpretBtn.addEventListener("click", async () => {
     const result = await chrome.runtime.sendMessage({
       action: "captureAndInterpret",
       withAudio,
+      audioDuration: duration * 1000,
     });
 
     if (result.error) {

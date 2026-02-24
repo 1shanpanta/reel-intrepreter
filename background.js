@@ -79,7 +79,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
 let pendingAudioResolve = null;
 
-async function handleCaptureAndInterpret({ withAudio }) {
+async function handleCaptureAndInterpret({ withAudio, audioDuration }) {
   const storage = await chrome.storage.local.get([
     "apiKey",
     "provider",
@@ -106,7 +106,7 @@ async function handleCaptureAndInterpret({ withAudio }) {
   let audioBase64 = null;
   if (withAudio && provider === "gemini") {
     try {
-      audioBase64 = await captureTabAudio();
+      audioBase64 = await captureTabAudio(audioDuration || 5000);
     } catch (err) {
       console.warn("Audio capture failed, proceeding with screenshot only:", err);
     }
@@ -150,7 +150,7 @@ async function callGroq(apiKey, imageBase64, userPrompt) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "llama-3.2-90b-vision-preview",
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           {
@@ -220,7 +220,7 @@ async function callGemini(apiKey, model, imageBase64, audioBase64, userPrompt) {
 }
 
 // --- Tab Audio Capture ---
-async function captureTabAudio() {
+async function captureTabAudio(duration) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) throw new Error("No active tab");
 
@@ -246,12 +246,12 @@ async function captureTabAudio() {
     const timeout = setTimeout(() => {
       pendingAudioResolve = null;
       reject(new Error("Audio capture timed out"));
-    }, 10000);
+    }, duration + 5000);
 
     chrome.runtime.sendMessage({
       action: "startRecording",
       streamId,
-      duration: 2000,
+      duration,
     });
 
     const originalResolve = pendingAudioResolve;

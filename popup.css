@@ -176,6 +176,27 @@ header h1 {
   accent-color: #fff;
 }
 
+.duration-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 24px;
+}
+
+.duration-row input[type="range"] {
+  flex: 1;
+  accent-color: #fff;
+  height: 4px;
+  cursor: pointer;
+}
+
+.duration-label {
+  font-size: 13px;
+  color: #a3a3a3;
+  min-width: 28px;
+  text-align: right;
+}
+
 /* Loading */
 #loading {
   display: flex;
