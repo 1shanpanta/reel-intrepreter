@@ -3,7 +3,12 @@ const $ = (id) => document.getElementById(id);
 // Elements
 const settingsToggle = $("settings-toggle");
 const settingsPanel = $("settings-panel");
+const providerSelect = $("provider-select");
 const apiKeyInput = $("api-key");
+const apiKeyLabel = $("api-key-label");
+const keyLink = $("key-link");
+const geminiModelGroup = $("gemini-model-group");
+const modelSelect = $("model-select");
 const saveKeyBtn = $("save-key");
 const keyStatus = $("key-status");
 const interpretBtn = $("interpret-btn");
@@ -16,21 +21,50 @@ const errorText = $("error-text");
 const resultsSection = $("results");
 const againBtn = $("again-btn");
 
-// Load saved API key on popup open
-chrome.storage.local.get("geminiApiKey", ({ geminiApiKey }) => {
-  if (geminiApiKey) {
-    apiKeyInput.value = geminiApiKey;
-    keyStatus.textContent = "Key saved";
-    keyStatus.className = "status-text";
+// Provider UI switching
+function updateProviderUI(provider) {
+  if (provider === "gemini") {
+    apiKeyLabel.textContent = "Gemini API Key";
+    keyLink.href = "https://aistudio.google.com/apikey";
+    keyLink.textContent = "aistudio.google.com";
+    geminiModelGroup.classList.remove("hidden");
+  } else {
+    apiKeyLabel.textContent = "Groq API Key";
+    keyLink.href = "https://console.groq.com/keys";
+    keyLink.textContent = "console.groq.com";
+    geminiModelGroup.classList.add("hidden");
   }
+}
+
+providerSelect.addEventListener("change", () => {
+  updateProviderUI(providerSelect.value);
 });
+
+// Load saved settings on popup open
+chrome.storage.local.get(
+  ["apiKey", "provider", "geminiModel"],
+  ({ apiKey, provider, geminiModel }) => {
+    if (provider) {
+      providerSelect.value = provider;
+      updateProviderUI(provider);
+    }
+    if (apiKey) {
+      apiKeyInput.value = apiKey;
+      keyStatus.textContent = "Key saved";
+      keyStatus.className = "status-text";
+    }
+    if (geminiModel) {
+      modelSelect.value = geminiModel;
+    }
+  }
+);
 
 // Toggle settings
 settingsToggle.addEventListener("click", () => {
   settingsPanel.classList.toggle("hidden");
 });
 
-// Save API key
+// Save settings
 saveKeyBtn.addEventListener("click", () => {
   const key = apiKeyInput.value.trim();
   if (!key) {
@@ -38,18 +72,24 @@ saveKeyBtn.addEventListener("click", () => {
     keyStatus.className = "status-text error";
     return;
   }
-  chrome.storage.local.set({ geminiApiKey: key }, () => {
-    keyStatus.textContent = "Key saved";
-    keyStatus.className = "status-text";
-  });
+  chrome.storage.local.set(
+    {
+      apiKey: key,
+      provider: providerSelect.value,
+      geminiModel: modelSelect.value,
+    },
+    () => {
+      keyStatus.textContent = "Settings saved";
+      keyStatus.className = "status-text";
+    }
+  );
 });
 
 // Interpret button
 interpretBtn.addEventListener("click", async () => {
-  // Check API key exists
-  const { geminiApiKey } = await chrome.storage.local.get("geminiApiKey");
-  if (!geminiApiKey) {
-    showError("Please set your Gemini API key in settings first.");
+  const { apiKey } = await chrome.storage.local.get("apiKey");
+  if (!apiKey) {
+    showError("Please set your API key in settings first.");
     settingsPanel.classList.remove("hidden");
     return;
   }
@@ -63,13 +103,12 @@ interpretBtn.addEventListener("click", async () => {
   loadingSection.classList.remove("hidden");
 
   if (withAudio) {
-    loadingText.textContent = "Recording audio (10s)...";
-    // Update loading text after recording
+    loadingText.textContent = "Recording audio (2s)...";
     setTimeout(() => {
       if (!loadingSection.classList.contains("hidden")) {
-        loadingText.textContent = "Analyzing with Gemini...";
+        loadingText.textContent = "Analyzing with AI...";
       }
-    }, 11000);
+    }, 3000);
   } else {
     loadingText.textContent = "Analyzing reel...";
   }

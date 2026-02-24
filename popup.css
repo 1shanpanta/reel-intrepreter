@@ -80,8 +80,21 @@ header h1 {
   outline: none;
 }
 
-.setting-group input:focus {
+.setting-group input:focus,
+.setting-group select:focus {
   border-color: #525252;
+}
+
+.setting-group select {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #e5e5e5;
+  font-size: 13px;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
 }
 
 .status-text {

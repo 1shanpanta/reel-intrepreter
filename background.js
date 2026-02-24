@@ -70,7 +70,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.action === "audioData") {
-    // Received audio data from offscreen document
     if (pendingAudioResolve) {
       pendingAudioResolve(message.data);
       pendingAudioResolve = null;
@@ -81,23 +80,31 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 let pendingAudioResolve = null;
 
 async function handleCaptureAndInterpret({ withAudio }) {
-  const apiKey = (await chrome.storage.local.get("geminiApiKey")).geminiApiKey;
+  const storage = await chrome.storage.local.get([
+    "apiKey",
+    "provider",
+    "geminiModel",
+  ]);
+  const apiKey = storage.apiKey;
+  const provider = storage.provider || "groq";
+
   if (!apiKey) {
-    throw new Error("API key not set. Please add your Gemini API key in settings.");
+    throw new Error("API key not set. Open settings and add your API key.");
   }
 
   // 1. Capture screenshot
   const screenshotDataUrl = await chrome.tabs.captureVisibleTab(null, {
-    format: "png",
+    format: "jpeg",
+    quality: 60,
   });
   const screenshotBase64 = screenshotDataUrl.replace(
-    /^data:image\/png;base64,/,
+    /^data:image\/jpeg;base64,/,
     ""
   );
 
-  // 2. Optionally capture audio
+  // 2. Optionally capture audio (only with Gemini — Groq doesn't support audio)
   let audioBase64 = null;
-  if (withAudio) {
+  if (withAudio && provider === "gemini") {
     try {
       audioBase64 = await captureTabAudio();
     } catch (err) {
@@ -105,33 +112,92 @@ async function handleCaptureAndInterpret({ withAudio }) {
     }
   }
 
-  // 3. Call Gemini API
-  const parts = [
+  const userPrompt = audioBase64
+    ? "Analyze this reel. The screenshot shows the visual content and the audio clip contains what was said. Interpret everything for a French learner."
+    : "Analyze this reel screenshot. Read all on-screen text (including subtitles, captions, overlays) and interpret everything for a French learner.";
+
+  // 3. Call the selected provider
+  let responseText;
+  if (provider === "groq") {
+    responseText = await callGroq(apiKey, screenshotBase64, userPrompt);
+  } else {
+    responseText = await callGemini(
+      apiKey,
+      storage.geminiModel || "gemini-2.0-flash-lite",
+      screenshotBase64,
+      audioBase64,
+      userPrompt
+    );
+  }
+
+  // Strip markdown code fences
+  const cleaned = responseText
+    .replace(/^```json\s*/i, "")
+    .replace(/```\s*$/, "")
+    .trim();
+
+  return JSON.parse(cleaned);
+}
+
+// --- Groq API (OpenAI-compatible, free tier: 14,400 req/day) ---
+async function callGroq(apiKey, imageBase64, userPrompt) {
+  const response = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
     {
-      inlineData: {
-        mimeType: "image/png",
-        data: screenshotBase64,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
       },
-    },
+      body: JSON.stringify({
+        model: "llama-3.2-90b-vision-preview",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          {
+            role: "user",
+            content: [
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageBase64}`,
+                },
+              },
+              { type: "text", text: userPrompt },
+            ],
+          },
+        ],
+        temperature: 0.3,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(
+      errData?.error?.message || `Groq API error: ${response.status}`
+    );
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// --- Gemini API ---
+async function callGemini(apiKey, model, imageBase64, audioBase64, userPrompt) {
+  const parts = [
+    { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
   ];
 
   if (audioBase64) {
     parts.push({
-      inlineData: {
-        mimeType: "audio/webm",
-        data: audioBase64,
-      },
+      inlineData: { mimeType: "audio/webm", data: audioBase64 },
     });
   }
 
-  parts.push({
-    text: audioBase64
-      ? "Analyze this reel. The screenshot shows the visual content and the audio clip contains what was said. Interpret everything for a French learner."
-      : "Analyze this reel screenshot. Read all on-screen text (including subtitles, captions, overlays) and interpret everything for a French learner.",
-  });
+  parts.push({ text: userPrompt });
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -144,21 +210,16 @@ async function handleCaptureAndInterpret({ withAudio }) {
 
   if (!response.ok) {
     const errData = await response.json().catch(() => ({}));
-    throw new Error(errData?.error?.message || `Gemini API error: ${response.status}`);
+    throw new Error(
+      errData?.error?.message || `Gemini API error: ${response.status}`
+    );
   }
 
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-  // Strip markdown code fences
-  const cleaned = text
-    .replace(/^```json\s*/i, "")
-    .replace(/```\s*$/, "")
-    .trim();
-
-  return JSON.parse(cleaned);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 }
 
+// --- Tab Audio Capture ---
 async function captureTabAudio() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id) throw new Error("No active tab");
@@ -167,7 +228,6 @@ async function captureTabAudio() {
     targetTabId: tab.id,
   });
 
-  // Create offscreen document for recording
   const existingContexts = await chrome.runtime.getContexts({
     contextTypes: ["OFFSCREEN_DOCUMENT"],
   });
@@ -180,22 +240,20 @@ async function captureTabAudio() {
     });
   }
 
-  // Ask offscreen document to record audio
   return new Promise((resolve, reject) => {
     pendingAudioResolve = resolve;
 
     const timeout = setTimeout(() => {
       pendingAudioResolve = null;
       reject(new Error("Audio capture timed out"));
-    }, 20000);
+    }, 10000);
 
     chrome.runtime.sendMessage({
       action: "startRecording",
       streamId,
-      duration: 10000,
+      duration: 2000,
     });
 
-    // Override resolve to also clear timeout
     const originalResolve = pendingAudioResolve;
     pendingAudioResolve = (data) => {
       clearTimeout(timeout);
