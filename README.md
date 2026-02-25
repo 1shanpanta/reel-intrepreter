@@ -6,15 +6,22 @@ Watch a reel, click the extension, get a full breakdown: translations, slang, cu
 
 ## Install
 
+**From the Chrome Web Store:**
+
+[Install Reel Interpreter](https://chromewebstore.google.com/detail/reel-interpreter) (pending review)
+
+**Or load manually:**
+
 1. Open `chrome://extensions` in Chrome
 2. Enable **Developer mode** (top right)
 3. Click **Load unpacked** and select this folder
-4. Click the extension icon in your toolbar
 
 ## Setup
 
-1. Get a [Gemini API key](https://aistudio.google.com/apikey)
-2. Click the extension icon, open settings (gear icon)
+1. Click the extension icon, open settings (gear icon)
+2. Choose your AI provider:
+   - **Groq** (free, 14,400 requests/day) — get a key at [console.groq.com](https://console.groq.com)
+   - **Google Gemini** — get a key at [aistudio.google.com](https://aistudio.google.com/apikey)
 3. Paste your API key and save
 
 ## Usage
@@ -23,11 +30,15 @@ Watch a reel, click the extension, get a full breakdown: translations, slang, cu
 2. Play a reel you want to understand
 3. Click the Reel Interpreter extension icon
 4. Hit **Interpret This Reel**
-5. Optionally check "Also capture audio" for spoken content (takes ~10s)
+5. Optionally check "Also capture audio" for spoken content (2-30s configurable)
 
 ## How It Works
 
 - Takes a screenshot of the visible tab (reads on-screen text, subtitles, captions)
-- Optionally records 10s of tab audio (captures spoken French)
-- Sends both to Gemini 2.0 Flash for multimodal analysis
+- Optionally records tab audio (captures spoken French)
+- Sends to your chosen AI provider for multimodal analysis
 - Returns structured interpretation with translations, slang breakdowns, and vocabulary
+
+## Privacy
+
+Your API key is stored locally and never leaves your device except when making requests to your chosen AI provider. No data is collected or sent to us. See [Privacy Policy](PRIVACY_POLICY.md).
