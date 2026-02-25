@@ -108,6 +108,17 @@ saveKeyBtn.addEventListener("click", () => {
 
 // Interpret button
 interpretBtn.addEventListener("click", async () => {
+  // Check if we're on a supported site
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const url = tab?.url || "";
+  const isSupported =
+    url.includes("instagram.com") || url.includes("tiktok.com");
+
+  if (!isSupported) {
+    showError("Navigate to an Instagram Reel or TikTok video first.");
+    return;
+  }
+
   const { apiKey } = await chrome.storage.local.get("apiKey");
   if (!apiKey) {
     showError("Please set your API key in settings first.");
@@ -153,6 +164,10 @@ interpretBtn.addEventListener("click", async () => {
       audioWarningText.textContent = result.audioWarning;
     } else {
       audioWarning.classList.add("hidden");
+    }
+
+    if (!result.data) {
+      throw new Error("No interpretation data received. Try again.");
     }
 
     showResults(result.data);
