@@ -176,6 +176,29 @@ header h1 {
   accent-color: #fff;
 }
 
+.audio-hint {
+  font-size: 11px;
+  color: #737373;
+  padding-left: 24px;
+}
+
+.checkbox-label input:disabled + span {
+  color: #525252;
+}
+
+.audio-warning {
+  background: #1a1608;
+  border: 1px solid #713f12;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+}
+
+.audio-warning p {
+  color: #fbbf24;
+  font-size: 12px;
+}
+
 .duration-row {
   display: flex;
   align-items: center;
@@ -320,6 +343,35 @@ header h1 {
   height: 1px;
   background: #262626;
   margin: 10px 0;
+}
+
+/* Word Breakdown */
+.breakdown-item {
+  padding: 6px 0;
+  border-bottom: 1px solid #262626;
+  font-size: 13px;
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+}
+
+.breakdown-french {
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+.breakdown-meaning {
+  color: #d4d4d4;
+}
+
+.breakdown-note {
+  display: block;
+  font-size: 11px;
+  color: #737373;
+  font-style: italic;
+  padding-left: 8px;
+  margin-top: 2px;
 }
 
 /* Vocabulary */

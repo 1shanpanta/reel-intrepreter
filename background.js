@@ -32,6 +32,13 @@ Return ONLY valid JSON in this structure:
   "detected_language": "",
   "literal_translation": "",
   "natural_translation": "",
+  "word_breakdown": [
+    {
+      "french": "",
+      "meaning": "",
+      "grammar_note": ""
+    }
+  ],
   "combined_meaning": "",
   "tone": "",
   "meme_format": "",
@@ -47,6 +54,11 @@ Return ONLY valid JSON in this structure:
     }
   ]
 }
+
+Field-specific instructions:
+- "literal_translation": Direct word-for-word translation to English.
+- "natural_translation": How a native English speaker would naturally say the same thing.
+- "word_breakdown": Break down each significant French word/phrase from the original text. Include the French word, its English meaning, and an optional grammar note (e.g. "informal conjugation", "slang", "contraction of 'de les'"). Skip common articles/prepositions unless they are part of an idiomatic expression.
 
 Output rules:
 - Be accurate, not creative.
@@ -104,11 +116,21 @@ async function handleCaptureAndInterpret({ withAudio, audioDuration }) {
 
   // 2. Optionally capture audio (only with Gemini — Groq doesn't support audio)
   let audioBase64 = null;
-  if (withAudio && provider === "gemini") {
-    try {
-      audioBase64 = await captureTabAudio(audioDuration || 5000);
-    } catch (err) {
-      console.warn("Audio capture failed, proceeding with screenshot only:", err);
+  let audioWarning = null;
+
+  if (withAudio) {
+    if (provider !== "gemini") {
+      audioWarning = "Audio capture requires the Gemini provider. Groq only supports screenshot analysis.";
+    } else {
+      try {
+        audioBase64 = await captureTabAudio(audioDuration || 5000);
+        if (!audioBase64) {
+          audioWarning = "Audio capture returned empty data. The tab may not be playing audio.";
+        }
+      } catch (err) {
+        console.warn("Audio capture failed:", err);
+        audioWarning = `Audio capture failed: ${err.message}. Proceeding with screenshot only.`;
+      }
     }
   }
 
@@ -136,7 +158,8 @@ async function handleCaptureAndInterpret({ withAudio, audioDuration }) {
     .replace(/```\s*$/, "")
     .trim();
 
-  return JSON.parse(cleaned);
+  const data = JSON.parse(cleaned);
+  return { data, audioUsed: !!audioBase64, audioWarning };
 }
 
 // --- Groq API (OpenAI-compatible, free tier: 14,400 req/day) ---
@@ -241,23 +264,20 @@ async function captureTabAudio(duration) {
   }
 
   return new Promise((resolve, reject) => {
-    pendingAudioResolve = resolve;
-
     const timeout = setTimeout(() => {
       pendingAudioResolve = null;
       reject(new Error("Audio capture timed out"));
     }, duration + 5000);
+
+    pendingAudioResolve = (data) => {
+      clearTimeout(timeout);
+      resolve(data);
+    };
 
     chrome.runtime.sendMessage({
       action: "startRecording",
       streamId,
       duration,
     });
-
-    const originalResolve = pendingAudioResolve;
-    pendingAudioResolve = (data) => {
-      clearTimeout(timeout);
-      originalResolve(data);
-    };
   });
 }

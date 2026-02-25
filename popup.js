@@ -23,6 +23,9 @@ const againBtn = $("again-btn");
 const durationRow = $("duration-row");
 const audioDuration = $("audio-duration");
 const durationLabel = $("duration-label");
+const audioHint = $("audio-hint");
+const audioWarning = $("audio-warning");
+const audioWarningText = $("audio-warning-text");
 
 // Show/hide duration slider with checkbox
 captureAudioCheckbox.addEventListener("change", () => {
@@ -41,11 +44,17 @@ function updateProviderUI(provider) {
     keyLink.href = "https://aistudio.google.com/apikey";
     keyLink.textContent = "aistudio.google.com";
     geminiModelGroup.classList.remove("hidden");
+    captureAudioCheckbox.disabled = false;
+    audioHint.classList.add("hidden");
   } else {
     apiKeyLabel.textContent = "Groq API Key";
     keyLink.href = "https://console.groq.com/keys";
     keyLink.textContent = "console.groq.com";
     geminiModelGroup.classList.add("hidden");
+    captureAudioCheckbox.disabled = true;
+    captureAudioCheckbox.checked = false;
+    durationRow.classList.add("hidden");
+    audioHint.classList.remove("hidden");
   }
 }
 
@@ -57,10 +66,9 @@ providerSelect.addEventListener("change", () => {
 chrome.storage.local.get(
   ["apiKey", "provider", "geminiModel"],
   ({ apiKey, provider, geminiModel }) => {
-    if (provider) {
-      providerSelect.value = provider;
-      updateProviderUI(provider);
-    }
+    const activeProvider = provider || "groq";
+    providerSelect.value = activeProvider;
+    updateProviderUI(activeProvider);
     if (apiKey) {
       apiKeyInput.value = apiKey;
       keyStatus.textContent = "Key saved";
@@ -139,8 +147,17 @@ interpretBtn.addEventListener("click", async () => {
       throw new Error(result.error);
     }
 
-    showResults(result);
+    // Show audio warning if audio was requested but not used
+    if (result.audioWarning) {
+      audioWarning.classList.remove("hidden");
+      audioWarningText.textContent = result.audioWarning;
+    } else {
+      audioWarning.classList.add("hidden");
+    }
+
+    showResults(result.data);
   } catch (err) {
+    audioWarning.classList.add("hidden");
     showError(err.message || "Something went wrong");
   }
 });
@@ -149,6 +166,7 @@ interpretBtn.addEventListener("click", async () => {
 againBtn.addEventListener("click", () => {
   resultsSection.classList.add("hidden");
   errorSection.classList.add("hidden");
+  audioWarning.classList.add("hidden");
   mainSection.classList.remove("hidden");
 });
 
@@ -183,6 +201,26 @@ function showResults(data) {
   // Translations
   $("literal-translation").textContent = data.literal_translation;
   $("natural-translation").textContent = data.natural_translation;
+
+  // Word Breakdown
+  const breakdownList = $("breakdown-list");
+  breakdownList.innerHTML = "";
+
+  if (data.word_breakdown && data.word_breakdown.length > 0) {
+    $("breakdown-card").classList.remove("hidden");
+    data.word_breakdown.forEach((w) => {
+      const item = document.createElement("div");
+      item.className = "breakdown-item";
+      item.innerHTML = `
+        <span class="breakdown-french">${escapeHtml(w.french)}</span>
+        <span class="breakdown-meaning"> — ${escapeHtml(w.meaning)}</span>
+        ${w.grammar_note ? `<span class="breakdown-note">${escapeHtml(w.grammar_note)}</span>` : ""}
+      `;
+      breakdownList.appendChild(item);
+    });
+  } else {
+    $("breakdown-card").classList.add("hidden");
+  }
 
   // Meaning
   $("combined-meaning").textContent = data.combined_meaning;

@@ -60,10 +60,11 @@
           Interpret This Reel
         </button>
 
-        <label class="checkbox-label">
+        <label class="checkbox-label" id="capture-audio-label">
           <input type="checkbox" id="capture-audio" />
           <span>Capture audio</span>
         </label>
+        <p id="audio-hint" class="audio-hint hidden">Audio capture requires the Gemini provider</p>
         <div id="duration-row" class="duration-row hidden">
           <input type="range" id="audio-duration" min="2" max="30" value="5" step="1" />
           <span id="duration-label" class="duration-label">5s</span>
@@ -79,6 +80,11 @@
       <!-- Error -->
       <div id="error" class="hidden">
         <p id="error-text"></p>
+      </div>
+
+      <!-- Audio Warning -->
+      <div id="audio-warning" class="audio-warning hidden">
+        <p id="audio-warning-text"></p>
       </div>
 
       <!-- Results -->
@@ -98,6 +104,12 @@
             <span class="field-label">Natural</span>
             <p id="natural-translation"></p>
           </div>
+        </div>
+
+        <!-- Word Breakdown -->
+        <div id="breakdown-card" class="result-card hidden">
+          <h3>Word Breakdown</h3>
+          <div id="breakdown-list"></div>
         </div>
 
         <!-- Meaning -->
