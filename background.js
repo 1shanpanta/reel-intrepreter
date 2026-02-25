@@ -58,7 +58,8 @@ Return ONLY valid JSON in this structure:
 Field-specific instructions:
 - "literal_translation": Direct word-for-word translation to English.
 - "natural_translation": How a native English speaker would naturally say the same thing.
-- "word_breakdown": Break down each significant French word/phrase from the original text. Include the French word, its English meaning, and an optional grammar note (e.g. "informal conjugation", "slang", "contraction of 'de les'"). Skip common articles/prepositions unless they are part of an idiomatic expression.
+- "word_breakdown": Break down EVERY single French word from the original text, in order. Include articles, prepositions, pronouns — everything. For each word, provide the French word, its English meaning, and an optional grammar note (e.g. "informal conjugation", "slang", "contraction of 'de les'", "definite article", "preposition"). Do not skip any words. This is the most important field — a learner depends on it.
+- "key_vocabulary": List EVERY word or phrase a French learner should study from this content. Include verbs (with infinitive form), nouns, adjectives, adverbs, expressions, and any grammatically interesting constructions. Aim for at least 5-10 entries. Do not limit to just slang or uncommon words — include common useful vocabulary too.
 
 Output rules:
 - Be accurate, not creative.
