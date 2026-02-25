@@ -6,7 +6,6 @@ const settingsPanel = $("settings-panel");
 const providerSelect = $("provider-select");
 const apiKeyInput = $("api-key");
 const apiKeyLabel = $("api-key-label");
-const keyLink = $("key-link");
 const geminiModelGroup = $("gemini-model-group");
 const modelSelect = $("model-select");
 const saveKeyBtn = $("save-key");
@@ -41,15 +40,11 @@ audioDuration.addEventListener("input", () => {
 function updateProviderUI(provider) {
   if (provider === "gemini") {
     apiKeyLabel.textContent = "Gemini API Key";
-    keyLink.href = "https://aistudio.google.com/apikey";
-    keyLink.textContent = "aistudio.google.com";
     geminiModelGroup.classList.remove("hidden");
     captureAudioCheckbox.disabled = false;
     audioHint.classList.add("hidden");
   } else {
     apiKeyLabel.textContent = "Groq API Key";
-    keyLink.href = "https://console.groq.com/keys";
-    keyLink.textContent = "console.groq.com";
     geminiModelGroup.classList.add("hidden");
     captureAudioCheckbox.disabled = true;
     captureAudioCheckbox.checked = false;
@@ -166,11 +161,13 @@ interpretBtn.addEventListener("click", async () => {
       audioWarning.classList.add("hidden");
     }
 
-    if (!result.data) {
+    // Handle both wrapped { data } and direct response formats
+    const interpretData = result.data || (result.detected_language ? result : null);
+    if (!interpretData) {
       throw new Error("No interpretation data received. Try again.");
     }
 
-    showResults(result.data);
+    showResults(interpretData);
   } catch (err) {
     audioWarning.classList.add("hidden");
     showError(err.message || "Something went wrong");
