@@ -176,12 +176,6 @@ header h1 {
   accent-color: #fff;
 }
 
-.audio-hint {
-  font-size: 11px;
-  color: #737373;
-  padding-left: 24px;
-}
-
 .disabled-label {
   cursor: default;
   opacity: 0.5;
@@ -199,40 +193,6 @@ header h1 {
   padding: 1px 6px;
   color: #737373;
   margin-left: 4px;
-}
-
-.audio-warning {
-  background: #1a1608;
-  border: 1px solid #713f12;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 4px;
-}
-
-.audio-warning p {
-  color: #fbbf24;
-  font-size: 12px;
-}
-
-.duration-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-left: 24px;
-}
-
-.duration-row input[type="range"] {
-  flex: 1;
-  accent-color: #fff;
-  height: 4px;
-  cursor: pointer;
-}
-
-.duration-label {
-  font-size: 13px;
-  color: #a3a3a3;
-  min-width: 28px;
-  text-align: right;
 }
 
 /* Loading */
