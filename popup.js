@@ -11,7 +11,6 @@ const modelSelect = $("model-select");
 const saveKeyBtn = $("save-key");
 const keyStatus = $("key-status");
 const interpretBtn = $("interpret-btn");
-const captureAudioCheckbox = $("capture-audio");
 const mainSection = $("main-section");
 const loadingSection = $("loading");
 const loadingText = $("loading-text");
@@ -98,7 +97,8 @@ interpretBtn.addEventListener("click", async () => {
     return;
   }
 
-  // Show loading
+  // Show loading & disable button to prevent double-clicks
+  interpretBtn.disabled = true;
   mainSection.classList.add("hidden");
   errorSection.classList.add("hidden");
   resultsSection.classList.add("hidden");
@@ -110,6 +110,10 @@ interpretBtn.addEventListener("click", async () => {
       action: "captureAndInterpret",
       withAudio: false,
     });
+
+    if (!result) {
+      throw new Error("No response from background. Try again.");
+    }
 
     if (result.error) {
       throw new Error(result.error);
@@ -123,8 +127,9 @@ interpretBtn.addEventListener("click", async () => {
 
     showResults(interpretData);
   } catch (err) {
-    audioWarning.classList.add("hidden");
     showError(err.message || "Something went wrong");
+  } finally {
+    interpretBtn.disabled = false;
   }
 });
 
@@ -176,11 +181,24 @@ function showResults(data) {
     data.word_breakdown.forEach((w) => {
       const item = document.createElement("div");
       item.className = "breakdown-item";
-      item.innerHTML = `
-        <span class="breakdown-french">${escapeHtml(w.original || w.french || "")}</span>
-        <span class="breakdown-meaning"> — ${escapeHtml(w.meaning)}</span>
-        ${w.grammar_note ? `<span class="breakdown-note">${escapeHtml(w.grammar_note)}</span>` : ""}
-      `;
+
+      const orig = document.createElement("span");
+      orig.className = "breakdown-french";
+      orig.textContent = w.original || w.french || "";
+      item.appendChild(orig);
+
+      const meaning = document.createElement("span");
+      meaning.className = "breakdown-meaning";
+      meaning.textContent = ` — ${w.meaning}`;
+      item.appendChild(meaning);
+
+      if (w.grammar_note) {
+        const note = document.createElement("span");
+        note.className = "breakdown-note";
+        note.textContent = w.grammar_note;
+        item.appendChild(note);
+      }
+
       breakdownList.appendChild(item);
     });
   } else {
@@ -222,11 +240,24 @@ function showResults(data) {
     data.key_vocabulary.forEach((v) => {
       const item = document.createElement("div");
       item.className = "vocab-item";
-      item.innerHTML = `
-        <span class="vocab-word">${escapeHtml(v.word)}</span>
-        <span class="vocab-meaning"> — ${escapeHtml(v.meaning)}</span>
-        ${v.notes ? `<p class="vocab-notes">${escapeHtml(v.notes)}</p>` : ""}
-      `;
+
+      const word = document.createElement("span");
+      word.className = "vocab-word";
+      word.textContent = v.word;
+      item.appendChild(word);
+
+      const meaning = document.createElement("span");
+      meaning.className = "vocab-meaning";
+      meaning.textContent = ` — ${v.meaning}`;
+      item.appendChild(meaning);
+
+      if (v.notes) {
+        const notes = document.createElement("p");
+        notes.className = "vocab-notes";
+        notes.textContent = v.notes;
+        item.appendChild(notes);
+      }
+
       vocabList.appendChild(item);
     });
   } else {
@@ -241,8 +272,3 @@ function addBadge(container, text, extraClass = "") {
   container.appendChild(badge);
 }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
