@@ -4,7 +4,7 @@
 
 ## Overview
 
-Reel Interpreter is a browser extension that helps users understand French Instagram Reels and TikToks by providing translations, slang breakdowns, and cultural context.
+Reel Interpreter is a browser extension that helps users understand Instagram Reels and TikToks in any language by providing translations, slang breakdowns, and cultural context.
 
 ## Data Collection
 
@@ -13,7 +13,7 @@ Reel Interpreter does **not** collect, store, or transmit any personal data to u
 ## What the Extension Accesses
 
 - **Visible tab screenshot:** A screenshot of the current tab is captured when you click "Interpret This Reel." This image is sent directly from your browser to the AI provider you selected (Groq or Google Gemini) and is not stored or seen by us.
-- **Tab audio (optional):** If you enable audio capture, a short audio clip (2–30 seconds) is recorded from the current tab and sent directly to your selected AI provider. It is not stored or seen by us.
+- **Tab audio (optional):** If you enable audio capture, a short audio clip is recorded from the current tab and sent directly to your selected AI provider. It is not stored or seen by us.
 - **API key:** Your API key for the selected AI provider is stored locally in your browser using Chrome's storage API. It never leaves your device except when making requests to the AI provider you configured.
 
 ## Third-Party Services
@@ -33,7 +33,6 @@ Your use of these services is governed by their respective privacy policies. We 
 | `tabCapture` | To optionally record audio from the current tab |
 | `storage` | To save your API key and preferences locally |
 | `offscreen` | To run the audio recording process in the background |
-| `scripting` | To detect the current page URL for site validation |
 | Host permissions (Instagram, TikTok) | To allow the extension to operate on these sites |
 
 ## Data Retention
