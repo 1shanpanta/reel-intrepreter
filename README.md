@@ -30,13 +30,11 @@ Watch a reel, click the extension, get a full breakdown: translations, slang, cu
 2. Play a reel you want to understand
 3. Click the Reel Interpreter extension icon
 4. Hit **Interpret This Reel**
-5. Optionally check "Also capture audio" for spoken content (2-30s configurable)
 
 ## How It Works
 
 - Takes a screenshot of the visible tab (reads on-screen text, subtitles, captions)
-- Optionally records tab audio (captures spoken French)
-- Sends to your chosen AI provider for multimodal analysis
+- Sends to your chosen AI provider for analysis
 - Returns structured interpretation with translations, slang breakdowns, and vocabulary
 
 ## Privacy
