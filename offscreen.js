@@ -1,4 +1,6 @@
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (sender.id !== chrome.runtime.id) return;
+
   if (message.action === "startRecording") {
     recordTabAudio(message.streamId, message.duration);
   }

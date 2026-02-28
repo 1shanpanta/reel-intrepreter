@@ -74,8 +74,10 @@ Output rules:
 - If unsure, lower the "confidence" field.
 - Output JSON only. No extra commentary.`;
 
-// Listen for messages from popup
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+// Listen for messages from popup and offscreen document only
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (sender.id !== chrome.runtime.id) return;
+
   if (message.action === "captureAndInterpret") {
     handleCaptureAndInterpret(message)
       .then(sendResponse)
@@ -85,8 +87,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   if (message.action === "audioData") {
     if (pendingAudioResolve) {
-      pendingAudioResolve(message.data);
+      const resolve = pendingAudioResolve;
       pendingAudioResolve = null;
+      resolve(message.data);
     }
   }
 });
@@ -160,7 +163,12 @@ async function handleCaptureAndInterpret({ withAudio, audioDuration }) {
     .replace(/```\s*$/, "")
     .trim();
 
-  const data = JSON.parse(cleaned);
+  let data;
+  try {
+    data = JSON.parse(cleaned);
+  } catch {
+    throw new Error("Failed to parse AI response. Please try again.");
+  }
   return { data, audioUsed: !!audioBase64, audioWarning };
 }
 
@@ -192,6 +200,7 @@ async function callGroq(apiKey, imageBase64, userPrompt) {
           },
         ],
         temperature: 0.3,
+        response_format: { type: "json_object" },
       }),
     }
   );
@@ -208,7 +217,17 @@ async function callGroq(apiKey, imageBase64, userPrompt) {
 }
 
 // --- Gemini API ---
+const ALLOWED_GEMINI_MODELS = [
+  "gemini-2.0-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+];
+
 async function callGemini(apiKey, model, imageBase64, audioBase64, userPrompt) {
+  if (!ALLOWED_GEMINI_MODELS.includes(model)) {
+    throw new Error("Invalid Gemini model selected.");
+  }
+
   const parts = [
     { inlineData: { mimeType: "image/jpeg", data: imageBase64 } },
   ];
@@ -222,10 +241,13 @@ async function callGemini(apiKey, model, imageBase64, audioBase64, userPrompt) {
   parts.push({ text: userPrompt });
 
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         contents: [{ parts }],
@@ -265,6 +287,12 @@ async function captureTabAudio(duration) {
     });
   }
 
+  // Cancel any stale pending audio resolve from a previous attempt
+  if (pendingAudioResolve) {
+    pendingAudioResolve(null);
+    pendingAudioResolve = null;
+  }
+
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       pendingAudioResolve = null;
@@ -280,6 +308,10 @@ async function captureTabAudio(duration) {
       action: "startRecording",
       streamId,
       duration,
+    }).catch((err) => {
+      clearTimeout(timeout);
+      pendingAudioResolve = null;
+      reject(new Error(`Failed to start recording: ${err.message}`));
     });
   });
 }
