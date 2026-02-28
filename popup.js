@@ -3,11 +3,7 @@ const $ = (id) => document.getElementById(id);
 // Elements
 const settingsToggle = $("settings-toggle");
 const settingsPanel = $("settings-panel");
-const providerSelect = $("provider-select");
 const apiKeyInput = $("api-key");
-const apiKeyLabel = $("api-key-label");
-const geminiModelGroup = $("gemini-model-group");
-const modelSelect = $("model-select");
 const saveKeyBtn = $("save-key");
 const keyStatus = $("key-status");
 const interpretBtn = $("interpret-btn");
@@ -18,45 +14,22 @@ const errorSection = $("error");
 const errorText = $("error-text");
 const resultsSection = $("results");
 const againBtn = $("again-btn");
-// Provider UI switching
-function updateProviderUI(provider) {
-  if (provider === "gemini") {
-    apiKeyLabel.textContent = "Gemini API Key";
-    geminiModelGroup.classList.remove("hidden");
-  } else {
-    apiKeyLabel.textContent = "Groq API Key";
-    geminiModelGroup.classList.add("hidden");
-  }
-}
 
-providerSelect.addEventListener("change", () => {
-  updateProviderUI(providerSelect.value);
+// Load saved API key on popup open
+chrome.storage.local.get(["apiKey"], ({ apiKey }) => {
+  if (apiKey) {
+    apiKeyInput.value = apiKey;
+    keyStatus.textContent = "Key saved";
+    keyStatus.className = "status-text";
+  }
 });
-
-// Load saved settings on popup open
-chrome.storage.local.get(
-  ["apiKey", "provider", "geminiModel"],
-  ({ apiKey, provider, geminiModel }) => {
-    const activeProvider = provider || "groq";
-    providerSelect.value = activeProvider;
-    updateProviderUI(activeProvider);
-    if (apiKey) {
-      apiKeyInput.value = apiKey;
-      keyStatus.textContent = "Key saved";
-      keyStatus.className = "status-text";
-    }
-    if (geminiModel) {
-      modelSelect.value = geminiModel;
-    }
-  }
-);
 
 // Toggle settings
 settingsToggle.addEventListener("click", () => {
   settingsPanel.classList.toggle("hidden");
 });
 
-// Save settings
+// Save API key
 saveKeyBtn.addEventListener("click", () => {
   const key = apiKeyInput.value.trim();
   if (!key) {
@@ -64,17 +37,10 @@ saveKeyBtn.addEventListener("click", () => {
     keyStatus.className = "status-text error";
     return;
   }
-  chrome.storage.local.set(
-    {
-      apiKey: key,
-      provider: providerSelect.value,
-      geminiModel: modelSelect.value,
-    },
-    () => {
-      keyStatus.textContent = "Settings saved";
-      keyStatus.className = "status-text";
-    }
-  );
+  chrome.storage.local.set({ apiKey: key }, () => {
+    keyStatus.textContent = "Key saved";
+    keyStatus.className = "status-text";
+  });
 });
 
 // Interpret button
