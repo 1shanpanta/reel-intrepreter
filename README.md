@@ -1,8 +1,8 @@
 # Reel Interpreter
 
-Chrome extension that helps you understand French Instagram Reels and TikToks — slang, humor, and all.
+Chrome extension that helps you understand Instagram Reels and TikToks in any language — slang, humor, and all.
 
-Watch a reel, click the extension, get a full breakdown: translations, slang, cultural context, and vocabulary.
+Watch a reel, click the extension, get a full breakdown: translations, slang, cultural context, and vocabulary. Language is detected automatically.
 
 ## Install
 

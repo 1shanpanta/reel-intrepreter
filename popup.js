@@ -177,7 +177,7 @@ function showResults(data) {
       const item = document.createElement("div");
       item.className = "breakdown-item";
       item.innerHTML = `
-        <span class="breakdown-french">${escapeHtml(w.french)}</span>
+        <span class="breakdown-french">${escapeHtml(w.original || w.french || "")}</span>
         <span class="breakdown-meaning"> — ${escapeHtml(w.meaning)}</span>
         ${w.grammar_note ? `<span class="breakdown-note">${escapeHtml(w.grammar_note)}</span>` : ""}
       `;

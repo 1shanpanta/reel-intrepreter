@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Reel Interpreter",
   "version": "1.0.0",
-  "description": "Understand French Instagram Reels & TikToks — slang, humor, and all.",
+  "description": "Understand Instagram Reels & TikToks in any language — slang, humor, and all.",
   "permissions": ["activeTab", "storage", "scripting", "tabCapture", "offscreen"],
   "action": {
     "default_popup": "popup.html",
