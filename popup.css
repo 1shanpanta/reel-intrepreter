@@ -182,8 +182,23 @@ header h1 {
   padding-left: 24px;
 }
 
+.disabled-label {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .checkbox-label input:disabled + span {
   color: #525252;
+}
+
+.coming-soon {
+  font-size: 10px;
+  background: #262626;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: #737373;
+  margin-left: 4px;
 }
 
 .audio-warning {

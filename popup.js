@@ -19,37 +19,14 @@ const errorSection = $("error");
 const errorText = $("error-text");
 const resultsSection = $("results");
 const againBtn = $("again-btn");
-const durationRow = $("duration-row");
-const audioDuration = $("audio-duration");
-const durationLabel = $("duration-label");
-const audioHint = $("audio-hint");
-const audioWarning = $("audio-warning");
-const audioWarningText = $("audio-warning-text");
-
-// Show/hide duration slider with checkbox
-captureAudioCheckbox.addEventListener("change", () => {
-  durationRow.classList.toggle("hidden", !captureAudioCheckbox.checked);
-});
-
-// Update label as slider moves
-audioDuration.addEventListener("input", () => {
-  durationLabel.textContent = `${audioDuration.value}s`;
-});
-
 // Provider UI switching
 function updateProviderUI(provider) {
   if (provider === "gemini") {
     apiKeyLabel.textContent = "Gemini API Key";
     geminiModelGroup.classList.remove("hidden");
-    captureAudioCheckbox.disabled = false;
-    audioHint.classList.add("hidden");
   } else {
     apiKeyLabel.textContent = "Groq API Key";
     geminiModelGroup.classList.add("hidden");
-    captureAudioCheckbox.disabled = true;
-    captureAudioCheckbox.checked = false;
-    durationRow.classList.add("hidden");
-    audioHint.classList.remove("hidden");
   }
 }
 
@@ -121,44 +98,21 @@ interpretBtn.addEventListener("click", async () => {
     return;
   }
 
-  const withAudio = captureAudioCheckbox.checked;
-
   // Show loading
   mainSection.classList.add("hidden");
   errorSection.classList.add("hidden");
   resultsSection.classList.add("hidden");
   loadingSection.classList.remove("hidden");
-
-  const duration = parseInt(audioDuration.value, 10);
-
-  if (withAudio) {
-    loadingText.textContent = `Recording audio (${duration}s)...`;
-    setTimeout(() => {
-      if (!loadingSection.classList.contains("hidden")) {
-        loadingText.textContent = "Analyzing with AI...";
-      }
-    }, (duration + 1) * 1000);
-  } else {
-    loadingText.textContent = "Analyzing reel...";
-  }
+  loadingText.textContent = "Analyzing reel...";
 
   try {
     const result = await chrome.runtime.sendMessage({
       action: "captureAndInterpret",
-      withAudio,
-      audioDuration: duration * 1000,
+      withAudio: false,
     });
 
     if (result.error) {
       throw new Error(result.error);
-    }
-
-    // Show audio warning if audio was requested but not used
-    if (result.audioWarning) {
-      audioWarning.classList.remove("hidden");
-      audioWarningText.textContent = result.audioWarning;
-    } else {
-      audioWarning.classList.add("hidden");
     }
 
     // Handle both wrapped { data } and direct response formats
@@ -178,7 +132,6 @@ interpretBtn.addEventListener("click", async () => {
 againBtn.addEventListener("click", () => {
   resultsSection.classList.add("hidden");
   errorSection.classList.add("hidden");
-  audioWarning.classList.add("hidden");
   mainSection.classList.remove("hidden");
 });
 
