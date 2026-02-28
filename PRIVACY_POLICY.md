@@ -12,27 +12,25 @@ Reel Interpreter does **not** collect, store, or transmit any personal data to u
 
 ## What the Extension Accesses
 
-- **Visible tab screenshot:** A screenshot of the current tab is captured when you click "Interpret This Reel." This image is sent directly from your browser to the AI provider you selected (Groq or Google Gemini) and is not stored or seen by us.
-- **Tab audio (optional):** If you enable audio capture, a short audio clip is recorded from the current tab and sent directly to your selected AI provider. It is not stored or seen by us.
-- **API key:** Your API key for the selected AI provider is stored locally in your browser using Chrome's storage API. It never leaves your device except when making requests to the AI provider you configured.
+- **Visible tab screenshot:** A screenshot of the current tab is captured when you click "Interpret This Reel." This image is sent directly from your browser to Groq's API for analysis and is not stored or seen by us.
+- **API key:** Your Groq API key is stored locally in your browser using Chrome's storage API. It never leaves your device except when making requests to Groq.
 
 ## Third-Party Services
 
-When you use the extension, your screenshot and optional audio are sent directly to the AI provider you chose:
+When you use the extension, your screenshot is sent directly to Groq for AI analysis:
 
 - **Groq** — https://groq.com/privacy-policy
-- **Google Gemini** — https://ai.google.dev/terms
 
-Your use of these services is governed by their respective privacy policies. We have no access to your requests or their responses.
+Your use of Groq is governed by their privacy policy. We have no access to your requests or their responses.
 
 ## Permissions Explained
 
 | Permission | Why it's needed |
 |---|---|
 | `activeTab` | To capture a screenshot of the current tab |
-| `tabCapture` | To optionally record audio from the current tab |
+| `tabCapture` | Reserved for upcoming audio capture feature |
 | `storage` | To save your API key and preferences locally |
-| `offscreen` | To run the audio recording process in the background |
+| `offscreen` | Reserved for upcoming audio capture feature |
 | Host permissions (Instagram, TikTok) | To allow the extension to operate on these sites |
 
 ## Data Retention

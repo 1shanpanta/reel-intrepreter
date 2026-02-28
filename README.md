@@ -19,9 +19,7 @@ Watch a reel, click the extension, get a full breakdown: translations, slang, cu
 ## Setup
 
 1. Click the extension icon, open settings (gear icon)
-2. Choose your AI provider:
-   - **Groq** (free, 14,400 requests/day) — get a key at [console.groq.com](https://console.groq.com)
-   - **Google Gemini** — get a key at [aistudio.google.com](https://aistudio.google.com/apikey)
+2. Get a free Groq API key at [console.groq.com](https://console.groq.com) (14,400 requests/day)
 3. Paste your API key and save
 
 ## Usage
@@ -34,9 +32,9 @@ Watch a reel, click the extension, get a full breakdown: translations, slang, cu
 ## How It Works
 
 - Takes a screenshot of the visible tab (reads on-screen text, subtitles, captions)
-- Sends to your chosen AI provider for analysis
+- Sends to Groq's AI for analysis (uses Llama 4 Scout)
 - Returns structured interpretation with translations, slang breakdowns, and vocabulary
 
 ## Privacy
 
-Your API key is stored locally and never leaves your device except when making requests to your chosen AI provider. No data is collected or sent to us. See [Privacy Policy](PRIVACY_POLICY.md).
+Your API key is stored locally and never leaves your device except when making requests to Groq. No data is collected or sent to us. See [Privacy Policy](PRIVACY_POLICY.md).
