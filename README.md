@@ -10,7 +10,7 @@ Watch a reel, click the extension, get a full breakdown: translations, slang, cu
 
 [Install Reel Interpreter](https://chromewebstore.google.com/detail/reel-interpreter) (pending review)
 
-**Or load manually:*
+**Or load manually:**
 
 1. Open `chrome://extensions` in Chrome
 2. Enable **Developer mode** (top right)

@@ -1,6 +1,6 @@
 # Privacy Policy — Reel Interpreter
 
-**Last updated:** February 25, 2026
+**Last updated:** March 2, 2026
 
 ## Overview
 
@@ -12,7 +12,7 @@ Reel Interpreter does **not** collect, store, or transmit any personal data to u
 
 ## What the Extension Accesses
 
-- **Visible tab screenshot:** A screenshot of the current tab is captured when you click "Interpret This Reel." This image is sent directly from your browser to Groq's API for analysis and is not stored or seen by us.
+- **Visible tab screenshot:** A screenshot of the current tab is captured when you click "Interpret This Reel." This image is sent directly from your browser to Groq's API for analysis and is not stored by us.
 - **API key:** Your Groq API key is stored locally in your browser using Chrome's storage API. It never leaves your device except when making requests to Groq.
 
 ## Third-Party Services
@@ -35,11 +35,11 @@ Your use of Groq is governed by their privacy policy. We have no access to your 
 
 ## Data Retention
 
-We retain nothing. All processing happens locally in your browser or directly between your browser and your chosen AI provider.
+We retain nothing. All processing happens locally in your browser or directly between your browser and Groq's API. Screenshots are discarded immediately after the AI response is received.
 
 ## Contact
 
-If you have questions about this privacy policy, open an issue at: https://github.com/ishanaudichya/reel-intrepreter/issues
+If you have questions about this privacy policy, open an issue at: https://github.com/1shanpanta/reel-intrepreter/issues
 
 ## Changes
 
