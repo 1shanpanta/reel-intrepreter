@@ -28,9 +28,7 @@ Your use of Groq is governed by their privacy policy. We have no access to your 
 | Permission | Why it's needed |
 |---|---|
 | `activeTab` | To capture a screenshot of the current tab |
-| `tabCapture` | Reserved for upcoming audio capture feature |
 | `storage` | To save your API key and preferences locally |
-| `offscreen` | Reserved for upcoming audio capture feature |
 | Host permissions (Instagram, TikTok) | To allow the extension to operate on these sites |
 
 ## Data Retention

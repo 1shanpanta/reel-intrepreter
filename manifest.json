@@ -3,7 +3,7 @@
   "name": "Reel Interpreter",
   "version": "1.0.0",
   "description": "Understand Instagram Reels & TikToks in any language — slang, humor, and all.",
-  "permissions": ["activeTab", "storage", "tabCapture", "offscreen"],
+  "permissions": ["activeTab", "storage"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

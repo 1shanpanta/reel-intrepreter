@@ -14,8 +14,6 @@ zip -r "$OUTPUT" \
   popup.html \
   popup.js \
   popup.css \
-  offscreen.html \
-  offscreen.js \
   icons/
 
 echo "Built $OUTPUT"
