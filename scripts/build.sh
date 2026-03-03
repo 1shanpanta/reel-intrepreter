@@ -2,8 +2,7 @@
 set -e
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION=$(grep '"version"' "$ROOT/manifest.json" | sed 's/.*: *"\(.*\)".*/\1/')
-OUTPUT="$ROOT/reel-interpreter-v${VERSION}.zip"
+OUTPUT="$ROOT/reel-interpreter.zip"
 
 rm -f "$OUTPUT"
 
